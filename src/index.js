@@ -93,7 +93,7 @@ module.exports = function gulpStylelint(options) {
       codeFilename: file.path
     });
 
-    const lintPromise = lint(localLintOptions)
+    const lintPromise = lint(localLintOptions, {})
       .then(lintResult =>
         // Checking for the presence of sourceMap.mappings
         // in case sourcemaps are initialized, but still empty:
