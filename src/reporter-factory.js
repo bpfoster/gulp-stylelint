@@ -40,7 +40,7 @@ module.exports = function reporterFactory(config = {}, options = {}) {
      * Formatter output.
      * @type String
      */
-    const formattedText = formatter(results);
+    const formattedText = formatter(results, {});
 
     if (config.console && formattedText.trim()) {
       asyncTasks.push(
