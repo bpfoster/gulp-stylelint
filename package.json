@@ -34,7 +34,7 @@
     "node": ">=18.12.0"
   },
   "peerDependencies": {
-    "stylelint": "10 - 15"
+    "stylelint": ">=17.0.0"
   },
   "dependencies": {
     "@jridgewell/trace-mapping": "^0.3.31",
