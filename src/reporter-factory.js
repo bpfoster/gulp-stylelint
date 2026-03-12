@@ -1,7 +1,9 @@
 import fancyLog from 'fancy-log';
-import formatters from 'stylelint';
+import stylelint from 'stylelint';
 
 import writer from './writer.js';
+
+const { formatters } = stylelint;
 
 /**
  * Creates a reporter from the given config.
@@ -19,41 +21,37 @@ export default function reporterFactory(config = {}, options = {}) {
    *
    * @type {Function}
    */
-  const formatter = typeof config.formatter === 'string' ?
+  const formatterPromise = typeof config.formatter === 'string' ?
     formatters[config.formatter] :
-    config.formatter;
+    config.formatter ? Promise.resolve(config.formatter) : config.formatter;
 
   /**
    * Reporter.
    * @param {[Object]} results - Array of stylelint results.
    * @return {Promise} Resolved when writer and logger are done.
    */
-  return function reporter(results) {
+  return function reporter(results, returnValue) {
+    return formatterPromise.then((formatter) => {
+        const formattedText = formatter(results, returnValue)
 
-    /**
-     * Async tasks performed by the reporter.
-     * @type [Promise]
-     */
-    const asyncTasks = [];
+        /**
+         * Async tasks performed by the reporter.
+         * @type [Promise]
+         */
+        const asyncTasks = [];
+        if (config.console && formattedText.trim()) {
+          asyncTasks.push(
+            fancyLog.info(`\n${formattedText}\n`)
+          );
+        }
 
-    /**
-     * Formatter output.
-     * @type String
-     */
-    const formattedText = formatter(results);
+        if (config.save) {
+          asyncTasks.push(
+            writer(formattedText, config.save, options.reportOutputDir)
+          );
+        }
 
-    if (config.console && formattedText.trim()) {
-      asyncTasks.push(
-        fancyLog.info(`\n${formattedText}\n`)
-      );
-    }
-
-    if (config.save) {
-      asyncTasks.push(
-        writer(formattedText, config.save, options.reportOutputDir)
-      );
-    }
-
-    return Promise.all(asyncTasks);
+        return Promise.all(asyncTasks);
+      })
   };
 };
