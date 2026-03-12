@@ -1,29 +1,27 @@
-'use strict';
+import { blue } from 'ansi-colors';
+import { statSync, readFileSync, unlinkSync, rmdirSync } from 'fs';
+import { resolve, join } from 'path';
+import test from 'tape';
+import { stub } from 'sinon';
 
-const ansiColors = require('ansi-colors');
-const fs = require('fs');
-const path = require('path');
-const test = require('tape');
-const {stub} = require('sinon');
+import writer from '../src/writer.js';
 
-const writer = require('../src/writer');
-
-const tmpDir = path.resolve(__dirname, '../tmp');
+const tmpDir = resolve(__dirname, '../tmp');
 
 test('writer should write to cwd if base dir is not specified', t => {
   stub(process, 'cwd').returns(tmpDir);
-  const reportFilePath = path.join(process.cwd(), 'foo.txt');
+  const reportFilePath = join(process.cwd(), 'foo.txt');
 
   t.plan(2);
 
   writer('footext', 'foo.txt')
     .then(() => {
       t.true(
-        fs.statSync(reportFilePath).isFile(),
+        statSync(reportFilePath).isFile(),
         'report file has been created in the current working directory'
       );
       t.equal(
-        fs.readFileSync(reportFilePath, 'utf8'),
+        readFileSync(reportFilePath, 'utf8'),
         'footext',
         'report file has correct contents'
       );
@@ -31,26 +29,26 @@ test('writer should write to cwd if base dir is not specified', t => {
     .catch(e => t.fail(`failed to create report file: ${e.message}`))
     .then(() => {
       process.cwd.restore();
-      fs.unlinkSync(reportFilePath);
+      unlinkSync(reportFilePath);
     });
 });
 
 test('writer should write to a base folder if it is specified', t => {
   stub(process, 'cwd').returns(tmpDir);
-  const reportDirPath = path.join(process.cwd(), 'foodir');
-  const reportSubdirPath = path.join(reportDirPath, '/subdir');
-  const reportFilePath = path.join(reportSubdirPath, 'foo.txt');
+  const reportDirPath = join(process.cwd(), 'foodir');
+  const reportSubdirPath = join(reportDirPath, '/subdir');
+  const reportFilePath = join(reportSubdirPath, 'foo.txt');
 
   t.plan(2);
 
   writer('footext', 'foo.txt', 'foodir/subdir')
     .then(() => {
       t.true(
-        fs.statSync(reportFilePath).isFile(),
+        statSync(reportFilePath).isFile(),
         'report file has been created in the specified base folder'
       );
       t.equal(
-        fs.readFileSync(reportFilePath, 'utf8'),
+        readFileSync(reportFilePath, 'utf8'),
         'footext',
         'report file has correct contents'
       );
@@ -58,22 +56,22 @@ test('writer should write to a base folder if it is specified', t => {
     .catch(e => t.fail(`failed to create report file: ${e.message}`))
     .then(() => {
       process.cwd.restore();
-      fs.unlinkSync(reportFilePath);
-      fs.rmdirSync(reportSubdirPath);
-      fs.rmdirSync(reportDirPath);
+      unlinkSync(reportFilePath);
+      rmdirSync(reportSubdirPath);
+      rmdirSync(reportDirPath);
     });
 });
 
 test('writer should strip colors from formatted output', t => {
   stub(process, 'cwd').returns(tmpDir);
-  const reportFilePath = path.join(process.cwd(), 'foo.txt');
+  const reportFilePath = join(process.cwd(), 'foo.txt');
 
   t.plan(1);
 
-  writer(ansiColors.blue('footext'), 'foo.txt')
+  writer(blue('footext'), 'foo.txt')
     .then(() => {
       t.equal(
-        fs.readFileSync(reportFilePath, 'utf8'),
+        readFileSync(reportFilePath, 'utf8'),
         'footext',
         'colors have been stripped in report file'
       );
@@ -81,6 +79,6 @@ test('writer should strip colors from formatted output', t => {
     .catch(e => t.fail(`failed to create report file: ${e.message}`))
     .then(() => {
       process.cwd.restore();
-      fs.unlinkSync(reportFilePath);
+      unlinkSync(reportFilePath);
     });
 });

@@ -1,14 +1,12 @@
-'use strict';
+import { src } from 'gulp';
+import gulpCleanCss from 'gulp-clean-css';
+import gulpConcat from 'gulp-concat';
+import gulpRename from 'gulp-rename';
+import { init } from 'gulp-sourcemaps';
+import { join } from 'path';
+import test from 'tape';
 
-const gulp = require('gulp');
-const gulpCleanCss = require('gulp-clean-css');
-const gulpConcat = require('gulp-concat');
-const gulpRename = require('gulp-rename');
-const gulpSourcemaps = require('gulp-sourcemaps');
-const path = require('path');
-const test = require('tape');
-
-const gulpStylelint = require('../src/index');
+import gulpStylelint from '../src/index.js';
 
 /**
  * Creates a full path to the fixtures glob.
@@ -16,14 +14,13 @@ const gulpStylelint = require('../src/index');
  * @return {String} Full path.
  */
 function fixtures(glob) {
-  return path.join(__dirname, 'fixtures', glob);
+  return join(__dirname, 'fixtures', glob);
 }
 
 test('should emit no errors when stylelint rules are satisfied', t => {
   t.plan(1);
-  gulp
-    .src(fixtures('original-*.css'))
-    .pipe(gulpSourcemaps.init())
+  src(fixtures('original-*.css'))
+    .pipe(init())
     .pipe(gulpStylelint({
       config: {rules: {}}
     }))
@@ -32,9 +29,8 @@ test('should emit no errors when stylelint rules are satisfied', t => {
 
 test('should apply sourcemaps correctly', t => {
   t.plan(6);
-  gulp
-    .src(fixtures('original-*.css'))
-    .pipe(gulpSourcemaps.init())
+  src(fixtures('original-*.css'))
+    .pipe(init())
     .pipe(gulpCleanCss())
     .pipe(gulpConcat('concatenated.css'))
     .pipe(gulpRename({prefix: 'renamed-'}))
@@ -77,9 +73,8 @@ test('should apply sourcemaps correctly', t => {
 
 test('should ignore empty sourcemaps', t => {
   t.plan(6);
-  gulp
-    .src(fixtures('original-*.css'))
-    .pipe(gulpSourcemaps.init()) // empty sourcemaps here
+  src(fixtures('original-*.css'))
+    .pipe(init()) // empty sourcemaps here
     .pipe(gulpStylelint({
       config: {rules: {
         'declaration-no-important': true
@@ -89,8 +84,8 @@ test('should ignore empty sourcemaps', t => {
           t.deepEqual(
             lintResult.map(r => r.source),
             [
-              path.join(__dirname, 'fixtures', 'original-a.css'),
-              path.join(__dirname, 'fixtures', 'original-b.css')
+              join(__dirname, 'fixtures', 'original-a.css'),
+              join(__dirname, 'fixtures', 'original-b.css')
             ],
             'there are two files'
           );

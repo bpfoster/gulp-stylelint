@@ -1,12 +1,10 @@
-'use strict';
+import { readFileSync } from 'fs';
+import { src, dest } from 'gulp';
+import { init } from 'gulp-sourcemaps';
+import { join, resolve } from 'path';
+import test from 'tape';
 
-const fs = require('fs');
-const gulp = require('gulp');
-const gulpSourcemaps = require('gulp-sourcemaps');
-const path = require('path');
-const test = require('tape');
-
-const gulpStylelint = require('../src/index');
+import gulpStylelint, { formatters as _formatters } from '../src/index.js';
 
 /**
  * Creates a full path to the fixtures glob.
@@ -14,7 +12,7 @@ const gulpStylelint = require('../src/index');
  * @return {String} Full path.
  */
 function fixtures(glob) {
-  return path.join(__dirname, 'fixtures', glob);
+  return join(__dirname, 'fixtures', glob);
 }
 
 test('should not throw when no arguments are passed', t => {
@@ -24,8 +22,7 @@ test('should not throw when no arguments are passed', t => {
 
 test('should emit an error on streamed file', t => {
   t.plan(1);
-  gulp
-    .src(fixtures('basic.css'), {buffer: false})
+  src(fixtures('basic.css'), {buffer: false})
     .pipe(gulpStylelint())
     .on('error', error => t.equal(
       error.message,
@@ -36,8 +33,7 @@ test('should emit an error on streamed file', t => {
 
 test('should NOT emit an error when configuration is set', t => {
   t.plan(1);
-  gulp
-    .src(fixtures('basic.css'))
+  src(fixtures('basic.css'))
     .pipe(gulpStylelint({config: {rules: []}}))
     .on('error', () => t.fail('error has been emitted'))
     .on('finish', () => t.pass('no error emitted'));
@@ -45,8 +41,7 @@ test('should NOT emit an error when configuration is set', t => {
 
 test('should emit an error when linter complains', t => {
   t.plan(1);
-  gulp
-    .src(fixtures('invalid.css'))
+  src(fixtures('invalid.css'))
     .pipe(gulpStylelint({config: {rules: {
       'color-hex-case': 'lower'
     }}}))
@@ -55,8 +50,7 @@ test('should emit an error when linter complains', t => {
 
 test('should ignore file', t => {
   t.plan(1);
-  gulp
-    .src([fixtures('basic.css'), fixtures('invalid.css')])
+  src([fixtures('basic.css'), fixtures('invalid.css')])
     .pipe(gulpStylelint({
       config: {rules: {'color-hex-case': 'lower'}},
       ignorePath: fixtures('ignore')
@@ -66,18 +60,17 @@ test('should ignore file', t => {
 
 test('should fix the file without emitting errors', t => {
   t.plan(2);
-  gulp
-    .src(fixtures('invalid.css'))
-    .pipe(gulpSourcemaps.init())
+  src(fixtures('invalid.css'))
+    .pipe(init())
     .pipe(gulpStylelint({
       fix: true,
       config: {rules: {'color-hex-case': 'lower'}}
     }))
-    .pipe(gulp.dest(path.resolve(__dirname, '../tmp')))
+    .pipe(dest(resolve(__dirname, '../tmp')))
     .on('error', error => t.fail(`error ${error} has been emitted`))
     .on('finish', () => {
       t.equal(
-        fs.readFileSync(path.resolve(__dirname, '../tmp/invalid.css'), 'utf8'),
+        readFileSync(resolve(__dirname, '../tmp/invalid.css'), 'utf8'),
         '.foo {\n  color: #fff;\n}\n',
         'report file has fixed contents'
       );
@@ -87,11 +80,11 @@ test('should fix the file without emitting errors', t => {
 
 test('should expose an object with stylelint formatter functions', t => {
   t.plan(2);
-  t.equal(typeof gulpStylelint.formatters, 'object', 'formatters property is an object');
+  t.equal(typeof _formatters, 'object', 'formatters property is an object');
 
   const formatters = Object
-    .keys(gulpStylelint.formatters)
-    .map(fName => gulpStylelint.formatters[fName]);
+    .keys(_formatters)
+    .map(fName => _formatters[fName]);
 
   t.true(formatters.every(f => typeof f === 'function'), 'all formatters are functions');
 });
