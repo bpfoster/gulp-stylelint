@@ -16,7 +16,7 @@ const { src } = gulp;
  * @return {String} Full path.
  */
 function fixtures(glob) {
-  return join(__dirname, 'fixtures', glob);
+  return join(import.meta.dirname, 'fixtures', glob);
 }
 
 test('should emit no errors when stylelint rules are satisfied', t => {
@@ -86,8 +86,8 @@ test('should ignore empty sourcemaps', t => {
           t.deepEqual(
             lintResult.map(r => r.source),
             [
-              join(__dirname, 'fixtures', 'original-a.css'),
-              join(__dirname, 'fixtures', 'original-b.css')
+              join(import.meta.dirname, 'fixtures', 'original-a.css'),
+              join(import.meta.dirname, 'fixtures', 'original-b.css')
             ],
             'there are two files'
           );

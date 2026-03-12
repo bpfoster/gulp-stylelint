@@ -158,8 +158,16 @@ export default function gulpStylelint(options) {
             return sum + res.results[0].warnings.filter(isErrorSeverity).length;
           }, 0);
 
+          const errors = lintResults.filter(res => res.results.length).map((res) => {
+            const file = res.results[0].source;
+            const errors = res.results[0].warnings.filter(isErrorSeverity)
+              .map((warning) => warning.text)
+              .join(', ');
+              return file + ': ' + errors;
+          });
+
           if (pluginOptions.failAfterError && errorCount > 0) {
-            this.emit('error', new PluginError(pluginName, `Failed with ${errorCount} ${errorCount === 1 ? 'error' : 'errors'}`));
+            this.emit('error', new PluginError(pluginName, `Failed with ${errorCount} ${errorCount === 1 ? 'error' : 'errors'}: ${errors.join('; ')}`));
           }
 
           done();

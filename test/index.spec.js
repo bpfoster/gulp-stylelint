@@ -45,7 +45,7 @@ test('should emit an error when linter complains', t => {
   t.plan(1);
   src(fixtures('invalid.css'))
     .pipe(gulpStylelint({config: {rules: {
-      'color-hex-case': 'lower'
+      'color-hex-length': 'short'
     }}}))
     .on('error', () => t.pass('error has been emitted correctly'));
 });
@@ -54,7 +54,7 @@ test('should ignore file', t => {
   t.plan(1);
   src([fixtures('basic.css'), fixtures('invalid.css')])
     .pipe(gulpStylelint({
-      config: {rules: {'color-hex-case': 'lower'}},
+      config: {rules: {'color-hex-length': 'short'}},
       ignorePath: fixtures('ignore')
     }))
     .on('finish', () => t.pass('no error emitted'));
@@ -66,7 +66,7 @@ test('should fix the file without emitting errors', t => {
     .pipe(init())
     .pipe(gulpStylelint({
       fix: true,
-      config: {rules: {'color-hex-case': 'lower'}}
+      config: {rules: {'color-hex-length': 'short'}}
     }))
     .pipe(dest(resolve(import.meta.dirname, '../tmp')))
     .on('error', error => t.fail(`error ${error} has been emitted`))
@@ -88,5 +88,5 @@ test('should expose an object with stylelint formatter functions', t => {
     .keys(_formatters)
     .map(fName => _formatters[fName]);
 
-  t.true(formatters.every(f => typeof f === 'function'), 'all formatters are functions');
+  t.true(formatters.every(f => typeof f.then === 'function'), 'all formatters are promises');
 });

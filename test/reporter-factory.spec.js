@@ -1,4 +1,4 @@
-import fancyLog, { info } from 'fancy-log';
+import fancyLog from 'fancy-log';
 import test from 'tape';
 import { stub } from 'sinon';
 
@@ -29,7 +29,7 @@ test('reporter should return a promise', t => {
 
 test('reporter should write to console if console param is true', t => {
   t.plan(1);
-  stub(fancyLog, 'info');
+  const info = stub(fancyLog, 'info');
   const reporter = reporterFactory({
     formatter() { return 'foo'; },
     console: true
@@ -46,7 +46,7 @@ test('reporter should write to console if console param is true', t => {
 
 test('reporter should NOT write to console if console param is false', t => {
   t.plan(1);
-  stub(fancyLog, 'info');
+  const info = stub(fancyLog, 'info');
   const reporter = reporterFactory({
     formatter() { return 'foo'; },
     console: false
@@ -63,7 +63,7 @@ test('reporter should NOT write to console if console param is false', t => {
 
 test('reporter should NOT write to console if formatter returned only whitespace', t => {
   t.plan(1);
-  stub(fancyLog, 'info');
+  const info = stub(fancyLog, 'info');
   const reporter = reporterFactory({
     formatter() { return '  \n'; },
     console: true
@@ -80,7 +80,7 @@ test('reporter should NOT write to console if formatter returned only whitespace
 
 test('reporter should NOT write to console by default', t => {
   t.plan(1);
-  stub(fancyLog, 'info');
+  const info = stub(fancyLog, 'info');
   const reporter = reporterFactory({
     formatter() { return 'foo'; }
   });
