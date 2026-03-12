@@ -1,10 +1,12 @@
 import { readFileSync } from 'fs';
-import { src, dest } from 'gulp';
+import gulp from 'gulp';
 import { init } from 'gulp-sourcemaps';
 import { join, resolve } from 'path';
 import test from 'tape';
 
 import gulpStylelint, { formatters as _formatters } from '../src/index.js';
+
+const { src, dest } = gulp;
 
 /**
  * Creates a full path to the fixtures glob.
@@ -12,7 +14,7 @@ import gulpStylelint, { formatters as _formatters } from '../src/index.js';
  * @return {String} Full path.
  */
 function fixtures(glob) {
-  return join(__dirname, 'fixtures', glob);
+  return join(import.meta.dirname, 'fixtures', glob);
 }
 
 test('should not throw when no arguments are passed', t => {
@@ -66,11 +68,11 @@ test('should fix the file without emitting errors', t => {
       fix: true,
       config: {rules: {'color-hex-case': 'lower'}}
     }))
-    .pipe(dest(resolve(__dirname, '../tmp')))
+    .pipe(dest(resolve(import.meta.dirname, '../tmp')))
     .on('error', error => t.fail(`error ${error} has been emitted`))
     .on('finish', () => {
       t.equal(
-        readFileSync(resolve(__dirname, '../tmp/invalid.css'), 'utf8'),
+        readFileSync(resolve(import.meta.dirname, '../tmp/invalid.css'), 'utf8'),
         '.foo {\n  color: #fff;\n}\n',
         'report file has fixed contents'
       );

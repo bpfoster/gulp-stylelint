@@ -1,4 +1,4 @@
-import { src } from 'gulp';
+import gulp from 'gulp';
 import gulpCleanCss from 'gulp-clean-css';
 import gulpConcat from 'gulp-concat';
 import gulpRename from 'gulp-rename';
@@ -7,6 +7,8 @@ import { join } from 'path';
 import test from 'tape';
 
 import gulpStylelint from '../src/index.js';
+
+const { src } = gulp;
 
 /**
  * Creates a full path to the fixtures glob.

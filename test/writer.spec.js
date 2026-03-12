@@ -1,4 +1,4 @@
-import { blue } from 'ansi-colors';
+import ansiColors from 'ansi-colors';
 import { statSync, readFileSync, unlinkSync, rmdirSync } from 'fs';
 import { resolve, join } from 'path';
 import test from 'tape';
@@ -6,7 +6,9 @@ import { stub } from 'sinon';
 
 import writer from '../src/writer.js';
 
-const tmpDir = resolve(__dirname, '../tmp');
+const { blue } = ansiColors;
+
+const tmpDir = resolve(import.meta.dirname, '../tmp');
 
 test('writer should write to cwd if base dir is not specified', t => {
   stub(process, 'cwd').returns(tmpDir);
