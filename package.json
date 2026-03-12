@@ -52,7 +52,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-rename": "^2.1.0",
     "gulp-sourcemaps": "^3.0.0",
-    "jest": "^29.4.2",
+    "jest": "^30.3.0",
     "postcss": "^8.5.8",
     "sinon": "^21.0.2",
     "stylelint": "^15.11.0",
