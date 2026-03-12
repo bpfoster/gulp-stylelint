@@ -58,8 +58,8 @@
     "jest": "^30.3.0",
     "postcss": "^8.5.8",
     "sinon": "^21.0.2",
-    "stylelint": "^16.26.1",
-    "stylelint-config-standard": "^39.0.1",
+    "stylelint": "^17.4.0",
+    "stylelint-config-standard": "^40.0.0",
     "tape": "^5.9.0"
   },
   "eslintConfig": {
