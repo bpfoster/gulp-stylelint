@@ -31,7 +31,7 @@ export default function reporterFactory(config = {}, options = {}) {
     const formatter = typeof config.formatter === 'string' ?
       await formatters[config.formatter] :
       config.formatter;
-      
+
     /**
      * Async tasks performed by the reporter.
      * @type [Promise]
@@ -42,7 +42,7 @@ export default function reporterFactory(config = {}, options = {}) {
      * Formatter output.
      * @type String
      */
-    const formattedText = formatter(results, returnValue);
+    const formattedText = formatter(results, returnValue || {});
 
     if (config.console && formattedText.trim()) {
       asyncTasks.push(

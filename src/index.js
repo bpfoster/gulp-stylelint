@@ -125,6 +125,8 @@ export default function gulpStylelint(options) {
    * @return {Promise} Resolved with original lint results.
    */
   function passLintResultsThroughReporters(lintResults) {
+    // Should we pass the returnValue from lint results to the reporter (and then to the formatter)?
+    // https://stylelint.io/developer-guide/formatters/
     const warnings = lintResults
       .reduce((accumulated, res) => accumulated.concat(res.results), []);
 
